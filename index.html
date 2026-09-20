@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Varipie Super App Tracker</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #151f32;
+      --card-accent: #1e2d4a;
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.25);
+      --secret: #f59e0b;
+      --secret-glow: rgba(245, 158, 11, 0.15);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --danger: #ef4444;
+      --border: rgba(255, 255, 255, 0.08);
+    }
+
+    /* TEMA KUSTOM */
+    body.theme-cyberpunk {
+      --bg: #0d0221;
+      --card: #190a38;
+      --card-accent: #2c105e;
+      --accent: #00f0ff;
+      --accent-glow: rgba(0, 240, 255, 0.3);
+      --secret: #ff007f;
+      --secret-glow: rgba(255, 0, 127, 0.2);
+      --text: #ffffff;
+      --muted: #a491d3;
+    }
+
+    body.theme-emerald {
+      --bg: #064e3b;
+      --card: #047857;
+      --card-accent: #065f46;
+      --accent: #34d399;
+      --accent-glow: rgba(52, 211, 153, 0.3);
+      --secret: #fbbf24;
+      --secret-glow: rgba(251, 191, 36, 0.2);
+      --text: #ecfdf5;
+      --muted: #a7f3d0;
+    }
+
+    body.theme-sunset {
+      --bg: #2d132c;
+      --card: #801336;
+      --card-accent: #c72c41;
+      --accent: #ff75a0;
+      --accent-glow: rgba(255, 117, 160, 0.3);
+      --secret: #fccde2;
+      --secret-glow: rgba(252, 205, 226, 0.2);
+      --text: #fff5f8;
+      --muted: #f3abb6;
+    }
+
+    body.theme-light {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --card-accent: #e2e8f0;
+      --accent: #059669;
+      --accent-glow: rgba(5, 150, 105, 0.15);
+      --secret: #d97706;
+      --secret-glow: rgba(217, 119, 6, 0.1);
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+    }
+
+    .header-title h1 {
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+
+    .header-title p {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .nav-tabs {
+      display: flex;
+      background: var(--card);
+      border-radius: 14px;
+      padding: 4px;
+      border: 1px solid var(--border);
+      gap: 4px;
+    }
+
+    .nav-tab {
+      flex: 1;
+      padding: 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .nav-tab.active {
+      background: var(--card-accent);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      transition: background 0.3s ease;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .amount {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .progress-bg {
+      background: rgba(0, 0, 0, 0.2);
+      height: 12px;
+      border-radius: 6px;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: var(--accent);
+      height: 100%;
+      width: 0%;
+      transition: width 0.5s ease;
+      border-radius: 6px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-box {
+      background: var(--card);
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    button.btn-action {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button.btn-action:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #022c22;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .btn-secondary {
+      background: var(--card-accent);
+      color: var(--text);
+    }
+
+    .secret-card {
+      border: 1px dashed var(--secret);
+      background: var(--secret-glow);
+    }
+
+    .secret-amount {
+      color: var(--secret);
+      text-shadow: 0 0 15px var(--secret-glow);
+    }
+
+    /* Form Controls for Settings */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .form-group input, .form-group select {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-accent);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    /* History Log */
+    .history-list {
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .history-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+    }
+
+    .history-date {
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .history-amount {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .badge {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    /* Note Card */
+    .note-card {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .note-card strong {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Top Header -->
+  <div class="header">
+    <div class="header-title">
+      <h1 id="appHeaderTitle">🛵 Varipie Super Tracker</h1>
+      <p id="appHeaderSub">Cipanas ➔ Pakel • Custom Target</p>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('dashboard')">📊 Dasbor</button>
+    <button class="nav-tab" onclick="switchTab('history')">📋 Riwayat</button>
+    <button class="nav-tab" onclick="switchTab('settings')">⚙️ Pengaturan</button>
+  </div>
+
+  <!-- TAB 1: DASHBOARD -->
+  <div id="tab-dashboard" class="tab-content active">
+    <!-- Main Savings Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>Tabungan Utama Harian</span>
+        <span class="badge" id="percentBadge">0%</span>
+      </div>
+      <div class="amount" id="mainSavings">Rp 0</div>
+      <div style="font-size: 0.8rem; color: var(--muted); margin-top: 4px;">Target: <span id="targetMainText">Rp 0</span></div>
+      <div class="progress-bg">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <!-- Secret Saver Card -->
+    <div class="card secret-card">
+      <div class="card-title" style="color: var(--secret);">🤫 Secret Saver</div>
+      <div class="amount secret-amount" id="secretSavings">Rp 0</div>
+      <div style="font-size: 0.8rem; color: var(--muted); margin-top: 4px;">Target: <span id="targetSecretText">Rp 0</span></div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+      <div class="card stat-box">
+        <div class="card-title">Check-in Hari</div>
+        <div class="stat-val" style="color: #38bdf8;" id="dayCount">0 / 0</div>
+      </div>
+      <div class="card stat-box">
+        <div class="card-title">Total Gabungan</div>
+        <div class="stat-val" style="color: #4ade80;" id="grandTotal">Rp 0</div>
+      </div>
+    </div>
+
+    <!-- Main Actions -->
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <button class="btn-action btn-primary" id="btnCheckIn" onclick="checkIn()">
+        <span>+ Check-in Hari Ini</span>
+      </button>
+      <button class="btn-action btn-secondary" onclick="undoCheckIn()">
+        <span>↩️ Batalkan Check-in Terakhir</span>
+      </button>
+    </div>
+
+    <!-- Motivational Note -->
+    <div class="card note-card">
+      💡 <strong>Tips Harian:</strong> Konsistensi adalah kunci! Setiap lembar Rp20.000 + Rp5.000 yang kamu sisihkan mendekatkanmu ke tujuan touring impian!
+    </div>
+  </div>
+
+  <!-- TAB 2: HISTORY -->
+  <div id="tab-history" class="tab-content">
+    <div class="card">
+      <div class="card-title">
+        <span>📋 Log Riwayat Check-in</span>
+        <span id="historyCount" style="color: var(--muted);">0 Entri</span>
+      </div>
+      <div class="history-list" id="historyList">
+        <div style="text-align: center; color: var(--muted); font-size: 0.8rem; padding: 20px 0;">Belum ada riwayat check-in.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: SETTINGS -->
+  <div id="tab-settings" class="tab-content">
+    <!-- Custom Theme Settings -->
+    <div class="card">
+      <div class="card-title">🎨 Tampilan & Tema</div>
+      <div class="form-group">
+        <label>Pilih Tema Warna</label>
+        <select id="themeSelect" onchange="changeTheme(this.value)">
+          <option value="default">🌌 Dark Neon (Bawaan)</option>
+          <option value="theme-cyberpunk">⚡ Cyberpunk Blue-Pink</option>
+          <option value="theme-emerald">🌲 Emerald Forest</option>
+          <option value="theme-sunset">🌅 Sunset Rose</option>
+          <option value="theme-light">☀️ Light Clean Mode</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Custom Goal Settings -->
+    <div class="card">
+      <div class="card-title">🎯 Atur Target & Nominal</div>
+      <div class="form-group">
+        <label>Judul Aplikasi / Target</label>
+        <input type="text" id="cfgTitle" value="🛵 Varipie Super Tracker">
+      </div>
+      <div class="form-group">
+        <label>Target Durasi (Hari)</label>
+        <input type="number" id="cfgDays" value="240">
+      </div>
+      <div class="form-group">
+        <label>Tabungan Utama per Hari (Rp)</label>
+        <input type="number" id="cfgMain" value="20000">
+      </div>
+      <div class="form-group">
+        <label>Secret Saver per Hari (Rp)</label>
+        <input type="number" id="cfgSecret" value="5000">
+      </div>
+      <button class="btn-action btn-primary" style="margin-top: 8px;" onclick="saveSettings()">
+        💾 Simpan Perubahan Pengaturan
+      </button>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card" style="border: 1px solid var(--danger);">
+      <div class="card-title" style="color: var(--danger);">⚠️ Zona Bahaya</div>
+      <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 12px;">Hapus seluruh riwayat check-in untuk mulai dari nol lagi.</p>
+      <button class="btn-action" style="background: var(--danger); color: white;" onclick="resetData()">
+        🗑️ Reset Semua Data Check-in
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // DEFAULT CONFIGURATION
+  const STORAGE_KEY_LOGS = 'varipie_v3_logs';
+  const STORAGE_KEY_CFG = 'varipie_v3_config';
+
+  let defaultConfig = {
+    title: "🛵 Varipie Super Tracker",
+    subTitle: "Cipanas ➔ Pakel • Custom Target",
+    days: 240,
+    mainDaily: 20000,
+    secretDaily: 5000,
+    theme: "default"
+  };
+
+  function loadConfig() {
+    const saved = localStorage.getItem(STORAGE_KEY_CFG);
+    return saved ? { ...defaultConfig, ...JSON.parse(saved) } : defaultConfig;
+  }
+
+  function saveConfigData(cfg) {
+    localStorage.setItem(STORAGE_KEY_CFG, JSON.stringify(cfg));
+  }
+
+  function loadLogs() {
+    const saved = localStorage.getItem(STORAGE_KEY_LOGS);
+    return saved ? JSON.parse(saved) : [];
+  }
+
+  function saveLogs(logs) {
+    localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(logs));
+  }
+
+  function switchTab(tabName) {
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    event.currentTarget.classList.add('active');
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+  }
+
+  function changeTheme(themeName) {
+    document.body.className = themeName === 'default' ? '' : themeName;
+    let cfg = loadConfig();
+    cfg.theme = themeName;
+    saveConfigData(cfg);
+  }
+
+  function getFormattedDate() {
+    const now = new Date();
+    return now.toLocaleDateString('id-ID', {
+      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  function updateDisplay() {
+    const cfg = loadConfig();
+    const logs = loadLogs();
+    const daysDone = logs.length;
+
+    // Apply Theme
+    document.body.className = cfg.theme === 'default' ? '' : cfg.theme;
+    document.getElementById('themeSelect').value = cfg.theme;
+
+    // Apply Inputs to Config Form
+    document.getElementById('cfgTitle').value = cfg.title;
+    document.getElementById('cfgDays').value = cfg.days;
+    document.getElementById('cfgMain').value = cfg.mainDaily;
+    document.getElementById('cfgSecret').value = cfg.secretDaily;
+
+    // Apply Header
+    document.getElementById('appHeaderTitle').innerText = cfg.title;
+
+    // Calculations
+    const mainTotal = daysDone * cfg.mainDaily;
+    const secretTotal = daysDone * cfg.secretDaily;
+    const grandTotal = mainTotal + secretTotal;
+
+    const targetMain = cfg.days * cfg.mainDaily;
+    const targetSecret = cfg.days * cfg.secretDaily;
+    const targetGrand = targetMain + targetSecret;
+
+    document.getElementById('appHeaderSub').innerText = `Target Total: Rp ${targetGrand.toLocaleString('id-ID')} (${cfg.days} Hari)`;
+
+    document.getElementById('mainSavings').innerText = 'Rp ' + mainTotal.toLocaleString('id-ID');
+    document.getElementById('secretSavings').innerText = 'Rp ' + secretTotal.toLocaleString('id-ID');
+    document.getElementById('grandTotal').innerText = 'Rp ' + grandTotal.toLocaleString('id-ID');
+
+    document.getElementById('targetMainText').innerText = 'Rp ' + targetMain.toLocaleString('id-ID');
+    document.getElementById('targetSecretText').innerText = 'Rp ' + targetSecret.toLocaleString('id-ID');
+
+    document.getElementById('dayCount').innerText = `${daysDone} / ${cfg.days}`;
+
+    const percent = Math.min((daysDone / cfg.days) * 100, 100).toFixed(1);
+    document.getElementById('progressBar').style.width = percent + '%';
+    document.getElementById('percentBadge').innerText = percent + '%';
+
+    // Render History
+    const historyListEl = document.getElementById('historyList');
+    document.getElementById('historyCount').innerText = `${daysDone} Hari`;
+
+    if (daysDone === 0) {
+      historyListEl.innerHTML = '<div style="text-align: center; color: var(--muted); font-size: 0.8rem; padding: 20px 0;">Belum ada riwayat check-in.</div>';
+    } else {
+      const dailySum = cfg.mainDaily + cfg.secretDaily;
+      historyListEl.innerHTML = logs.slice().reverse().map((item) => `
+        <div class="history-item">
+          <div>
+            <strong>Hari ke-${item.dayNumber}</strong>
+            <div class="history-date">${item.timestamp}</div>
+          </div>
+          <div class="history-amount">+Rp ${dailySum.toLocaleString('id-ID')}</div>
+        </div>
+      `).join('');
+    }
+
+    // Checkin Button State
+    const btnCheckIn = document.getElementById('btnCheckIn');
+    if (daysDone >= cfg.days) {
+      btnCheckIn.disabled = true;
+      btnCheckIn.innerHTML = '<span>🎉 Target Rp ' + targetGrand.toLocaleString('id-ID') + ' Selesai!</span>';
+    } else {
+      btnCheckIn.disabled = false;
+      btnCheckIn.innerHTML = '<span>+ Check-in Hari Ini</span>';
+    }
+  }
+
+  function checkIn() {
+    const cfg = loadConfig();
+    let logs = loadLogs();
+    if (logs.length < cfg.days) {
+      logs.push({
+        dayNumber: logs.length + 1,
+        timestamp: getFormattedDate()
+      });
+      saveLogs(logs);
+      updateDisplay();
+    }
+  }
+
+  function undoCheckIn() {
+    let logs = loadLogs();
+    if (logs.length > 0) {
+      if (confirm(`Hapus check-in Hari ke-${logs.length}?`)) {
+        logs.pop();
+        saveLogs(logs);
+        updateDisplay();
+      }
+    }
+  }
+
+  function saveSettings() {
+    let cfg = loadConfig();
+    cfg.title = document.getElementById('cfgTitle').value || "🛵 Varipie Tracker";
+    cfg.days = parseInt(document.getElementById('cfgDays').value) || 240;
+    cfg.mainDaily = parseInt(document.getElementById('cfgMain').value) || 20000;
+    cfg.secretDaily = parseInt(document.getElementById('cfgSecret').value) || 5000;
+
+    saveConfigData(cfg);
+    updateDisplay();
+    alert('✅ Pengaturan berhasil disimpan!');
+  }
+
+  function resetData() {
+    if (confirm('YAKIN MAU RESET SEMUA DATA CHECK-IN?')) {
+      localStorage.removeItem(STORAGE_KEY_LOGS);
+      updateDisplay();
+    }
+  }
+
+  // Init
+  updateDisplay();
+</script>
+
+</body>
+</html>
